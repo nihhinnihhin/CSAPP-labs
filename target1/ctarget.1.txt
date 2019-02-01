@@ -1,0 +1,6 @@
+00 00 00 00 00 00 00 00 00 00 /* BUFFERSIZE = 40, thus 40 bytes allocated */ 
+00 00 00 00 00 00 00 00 00 00 /* i.e. 80 hex digits */
+00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00
+c0 17 40 /* addr of function touch1: 00000000004017c0 <touch1> */ 
+/* a8 17 40 for fun, this would cause an infinite loop, since it is addr of getbuf, but failed. */ 

