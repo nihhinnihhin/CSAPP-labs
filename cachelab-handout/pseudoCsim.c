@@ -1,4 +1,4 @@
-ata structure needed:
+data structure needed:
 
 cache is just 2D array of cache lines:
 	struct cacheLine cache[S][E];
