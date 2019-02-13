@@ -20,19 +20,37 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
  *     searches for that string to identify the transpose function to
  *     be graded. 
  */
+// diagonal elements unconsidered
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
-	int i, j,  bsize, ii, jj, tmp;
-	bsize = 4;
+	// bsize = sqrt(256/3)
+	int i, j,  bsize, ii, jj, tmp, index;
+	if(N == 32)
+		bsize = 8;
+	else if(N == 64)
+		bsize = 4 ;
+	else 
+		bsize = 8;
 	for(i = 0; i < N; i+=bsize)
 		for(j = 0; j < M; j+=bsize)
 			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+			{
 				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
 				{
-					tmp = A[ii][jj];
-					B[jj][ii] = tmp;
+					if(ii != jj)
+					{
+						B[jj][ii]  = A[ii][jj];
+					}
+					else
+					{
+						tmp = A[ii][jj];
+						index = ii;
+					}
 				}
+				if(i == j)
+					B[index][index] = tmp;
+			}
 }
 
 /* 
@@ -88,24 +106,24 @@ void transTrial3(int M, int N, int A[N][M], int B[M][N])
 				}
 }
 
-void transpose_submit(int M, int N, int A[N][M], int B[M][N])
-{
-	int i, j,  bsize, ii, jj, tmp;
-	if(M == 61)		bsize = 4;
-	else bsize = 6;
-	for(i = 0; i < N; i+=bsize)
-		for(j = 0; j < M; j+=bsize)
-		{
-			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
-				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
-				{
-					tmp = A[ii][jj];
-					B[jj][ii] = tmp;
-				}
-			if(N == 32 && ii == 23) bsize = 4;
-			if(N == 64 && ii == 59) bsize = 4;
-		}
-}
+// void transpose_submit(int M, int N, int A[N][M], int B[M][N])
+// {
+// 	int i, j,  bsize, ii, jj, tmp;
+// 	if(M == 61)		bsize = 4;
+// 	else bsize = 6;
+// 	for(i = 0; i < N; i+=bsize)
+// 		for(j = 0; j < M; j+=bsize)
+// 		{
+// 			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+// 				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
+// 				{
+// 					tmp = A[ii][jj];
+// 					B[jj][ii] = tmp;
+// 				}
+// 			if(N == 32 && ii == 23) bsize = 4;
+// 			if(N == 64 && ii == 59) bsize = 4;
+// 		}
+// }
 /*
  *
  * registerFunctions - This function registers your transpose
