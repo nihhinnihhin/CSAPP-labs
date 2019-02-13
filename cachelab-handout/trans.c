@@ -1,3 +1,4 @@
+/* author: MCX;		ID: hinmo */
 /* 
  * trans.c - Matrix transpose B = A^T
  *
@@ -22,6 +23,16 @@ int is_transpose(int M, int N, int A[N][M], int B[M][N]);
 char transpose_submit_desc[] = "Transpose submission";
 void transpose_submit(int M, int N, int A[N][M], int B[M][N])
 {
+	int i, j,  bsize, ii, jj, tmp;
+	bsize = 4;
+	for(i = 0; i < N; i+=bsize)
+		for(j = 0; j < M; j+=bsize)
+			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
+				{
+					tmp = A[ii][jj];
+					B[jj][ii] = tmp;
+				}
 }
 
 /* 
@@ -46,7 +57,57 @@ void trans(int M, int N, int A[N][M], int B[M][N])
 
 }
 
+char transTrial2_desc[] = "Trial2 bise : 5";
+void transTrial2(int M, int N, int A[N][M], int B[M][N])
+{
+	int i, j,  bsize, ii, jj, tmp;
+	bsize = 5;
+	for(i = 0; i < N; i+=bsize)
+		for(j = 0; j < M; j+=bsize)
+			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
+				{
+					tmp = A[ii][jj];
+					B[jj][ii] = tmp;
+				}
+}
+
+
+char transTrial3_desc[] = "Trial3 bsize: 6";
+void transTrial3(int M, int N, int A[N][M], int B[M][N])
+{
+	int i, j,  bsize, ii, jj, tmp;
+	bsize = 6;
+	for(i = 0; i < N; i+=bsize)
+		for(j = 0; j < M; j+=bsize)
+			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
+				{
+					tmp = A[ii][jj];
+					B[jj][ii] = tmp;
+				}
+}
+
+void transpose_submit(int M, int N, int A[N][M], int B[M][N])
+{
+	int i, j,  bsize, ii, jj, tmp;
+	if(M == 61)		bsize = 4;
+	else bsize = 6;
+	for(i = 0; i < N; i+=bsize)
+		for(j = 0; j < M; j+=bsize)
+		{
+			for(ii = i; (ii < i + bsize) && (ii < N); ii++)
+				for(jj = j; (jj < j + bsize) && (jj < M); jj++)
+				{
+					tmp = A[ii][jj];
+					B[jj][ii] = tmp;
+				}
+			if(N == 32 && ii == 23) bsize = 4;
+			if(N == 64 && ii == 59) bsize = 4;
+		}
+}
 /*
+ *
  * registerFunctions - This function registers your transpose
  *     functions with the driver.  At runtime, the driver will
  *     evaluate each of the registered functions and summarize their
@@ -61,6 +122,11 @@ void registerFunctions()
     /* Register any additional transpose functions */
     registerTransFunction(trans, trans_desc); 
 
+    registerTransFunction(transTrial2, transTrial2_desc); 
+
+    registerTransFunction(transTrial3, transTrial3_desc); 
+
+    //  registerTransFunction(transTrial4, transTrial4_desc); 
 }
 
 /* 

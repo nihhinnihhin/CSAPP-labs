@@ -1,0 +1,231 @@
+CacheLab partA evaluation
+Author: MCX;     ID: hinmo
+2019年 02月 13日 星期三 19:42:19 CST
+
+
+Results sorted by operation for csim, i.e., L, S, M
+
+L operation
+7:L 7ff000384,4 hit 
+9:L 7ff000388,4 hit 
+10:L 7ff000384,4 hit 
+11:L 7ff000378,8 hit 
+12:L 7ff000388,4 hit 
+13:L 600a20,4 miss eviction 
+15:L 7ff000388,4 hit 
+16:L 7ff000370,8 hit 
+17:L 7ff000384,4 hit 
+18:L 7ff00038c,4 hit 
+21:L 7ff000388,4 hit 
+22:L 7ff000384,4 hit 
+23:L 7ff000378,8 hit 
+24:L 7ff000388,4 hit 
+25:L 600a24,4 miss eviction 
+27:L 7ff000388,4 hit 
+28:L 7ff000370,8 hit 
+29:L 7ff000384,4 hit 
+30:L 7ff00038c,4 hit 
+33:L 7ff000388,4 hit 
+34:L 7ff000384,4 hit 
+35:L 7ff000378,8 hit 
+36:L 7ff000388,4 hit 
+37:L 600a28,4 miss 
+39:L 7ff000388,4 hit 
+40:L 7ff000370,8 hit 
+41:L 7ff000384,4 hit 
+42:L 7ff00038c,4 hit 
+45:L 7ff000388,4 hit 
+46:L 7ff000384,4 hit 
+47:L 7ff000378,8 hit 
+48:L 7ff000388,4 hit 
+49:L 600a2c,4 hit 
+51:L 7ff000388,4 hit 
+52:L 7ff000370,8 hit 
+53:L 7ff000384,4 hit 
+54:L 7ff00038c,4 hit 
+57:L 7ff000388,4 hit 
+59:L 7ff000384,4 hit 
+61:L 7ff000388,4 hit 
+62:L 7ff000384,4 hit 
+63:L 7ff000378,8 hit 
+64:L 7ff000388,4 hit 
+65:L 600a30,4 miss eviction 
+67:L 7ff000388,4 hit 
+68:L 7ff000370,8 miss eviction 
+69:L 7ff000384,4 hit 
+70:L 7ff00038c,4 hit 
+73:L 7ff000388,4 hit 
+74:L 7ff000384,4 hit 
+75:L 7ff000378,8 hit 
+76:L 7ff000388,4 hit 
+77:L 600a34,4 hit 
+79:L 7ff000388,4 hit 
+80:L 7ff000370,8 hit 
+81:L 7ff000384,4 hit 
+82:L 7ff00038c,4 hit 
+85:L 7ff000388,4 hit 
+86:L 7ff000384,4 hit 
+87:L 7ff000378,8 hit 
+88:L 7ff000388,4 hit 
+89:L 600a38,4 miss eviction 
+91:L 7ff000388,4 hit 
+92:L 7ff000370,8 hit 
+93:L 7ff000384,4 hit 
+94:L 7ff00038c,4 hit 
+97:L 7ff000388,4 hit 
+98:L 7ff000384,4 hit 
+99:L 7ff000378,8 hit 
+100:L 7ff000388,4 hit 
+101:L 600a3c,4 hit 
+103:L 7ff000388,4 hit 
+104:L 7ff000370,8 hit 
+105:L 7ff000384,4 hit 
+106:L 7ff00038c,4 hit 
+109:L 7ff000388,4 hit 
+111:L 7ff000384,4 hit 
+113:L 7ff000388,4 hit 
+114:L 7ff000384,4 hit 
+115:L 7ff000378,8 hit 
+116:L 7ff000388,4 hit 
+117:L 600a40,4 miss eviction 
+119:L 7ff000388,4 hit 
+120:L 7ff000370,8 hit 
+121:L 7ff000384,4 hit 
+122:L 7ff00038c,4 hit 
+125:L 7ff000388,4 hit 
+126:L 7ff000384,4 hit 
+127:L 7ff000378,8 hit 
+128:L 7ff000388,4 hit 
+129:L 600a44,4 hit 
+131:L 7ff000388,4 hit 
+132:L 7ff000370,8 hit 
+133:L 7ff000384,4 hit 
+134:L 7ff00038c,4 hit 
+137:L 7ff000388,4 hit 
+138:L 7ff000384,4 hit 
+139:L 7ff000378,8 hit 
+140:L 7ff000388,4 hit 
+141:L 600a48,4 miss eviction 
+143:L 7ff000388,4 hit 
+144:L 7ff000370,8 hit 
+145:L 7ff000384,4 hit 
+146:L 7ff00038c,4 hit 
+149:L 7ff000388,4 hit 
+150:L 7ff000384,4 hit 
+151:L 7ff000378,8 hit 
+152:L 7ff000388,4 hit 
+153:L 600a4c,4 miss eviction 
+155:L 7ff000388,4 hit 
+156:L 7ff000370,8 hit 
+157:L 7ff000384,4 hit 
+158:L 7ff00038c,4 hit 
+161:L 7ff000388,4 hit 
+163:L 7ff000384,4 hit 
+165:L 7ff000388,4 hit 
+166:L 7ff000384,4 hit 
+167:L 7ff000378,8 hit 
+168:L 7ff000388,4 hit 
+169:L 600a50,4 miss eviction 
+171:L 7ff000388,4 hit 
+172:L 7ff000370,8 hit 
+173:L 7ff000384,4 hit 
+174:L 7ff00038c,4 hit 
+177:L 7ff000388,4 hit 
+178:L 7ff000384,4 hit 
+179:L 7ff000378,8 hit 
+180:L 7ff000388,4 hit 
+181:L 600a54,4 hit 
+183:L 7ff000388,4 hit 
+184:L 7ff000370,8 hit 
+185:L 7ff000384,4 hit 
+186:L 7ff00038c,4 hit 
+189:L 7ff000388,4 hit 
+190:L 7ff000384,4 hit 
+191:L 7ff000378,8 hit 
+192:L 7ff000388,4 hit 
+193:L 600a58,4 miss eviction 
+195:L 7ff000388,4 hit 
+196:L 7ff000370,8 hit 
+197:L 7ff000384,4 hit 
+198:L 7ff00038c,4 hit 
+201:L 7ff000388,4 hit 
+202:L 7ff000384,4 hit 
+203:L 7ff000378,8 hit 
+204:L 7ff000388,4 hit 
+205:L 600a5c,4 hit 
+207:L 7ff000388,4 hit 
+208:L 7ff000370,8 hit 
+209:L 7ff000384,4 hit 
+210:L 7ff00038c,4 hit 
+213:L 7ff000388,4 hit 
+215:L 7ff000384,4 hit 
+216:L 7ff000390,8 miss eviction 
+217:L 7ff000398,8 miss eviction 
+218:L 600aa0,1 miss eviction 
+S operation
+1:S 600aa0,1 miss 
+2:S 7ff000398,8 miss 
+3:S 7ff000390,8 miss 
+4:S 7ff000378,8 miss 
+5:S 7ff000370,8 miss 
+6:S 7ff000384,4 miss 
+8:S 7ff000388,4 miss 
+14:S 7ff00038c,4 hit 
+19:S 600a60,4 miss eviction 
+26:S 7ff00038c,4 hit 
+31:S 600a70,4 miss eviction 
+38:S 7ff00038c,4 hit 
+43:S 600a80,4 miss eviction 
+50:S 7ff00038c,4 hit 
+55:S 600a90,4 miss eviction 
+60:S 7ff000388,4 hit 
+66:S 7ff00038c,4 hit 
+71:S 600a64,4 miss eviction 
+78:S 7ff00038c,4 hit 
+83:S 600a74,4 miss eviction 
+90:S 7ff00038c,4 hit 
+95:S 600a84,4 miss eviction 
+102:S 7ff00038c,4 hit 
+107:S 600a94,4 miss eviction 
+112:S 7ff000388,4 hit 
+118:S 7ff00038c,4 hit 
+123:S 600a68,4 miss eviction 
+130:S 7ff00038c,4 hit 
+135:S 600a78,4 miss eviction 
+142:S 7ff00038c,4 hit 
+147:S 600a88,4 miss eviction 
+154:S 7ff00038c,4 hit 
+159:S 600a98,4 miss eviction 
+164:S 7ff000388,4 hit 
+170:S 7ff00038c,4 hit 
+175:S 600a6c,4 miss eviction 
+182:S 7ff00038c,4 hit 
+187:S 600a7c,4 miss eviction 
+194:S 7ff00038c,4 hit 
+199:S 600a8c,4 miss eviction 
+206:S 7ff00038c,4 hit 
+211:S 600a9c,4 miss eviction 
+M operation
+20:M 7ff000388,4 hit hit 
+32:M 7ff000388,4 hit hit 
+44:M 7ff000388,4 hit hit 
+56:M 7ff000388,4 hit hit 
+58:M 7ff000384,4 hit hit 
+72:M 7ff000388,4 hit hit 
+84:M 7ff000388,4 hit hit 
+96:M 7ff000388,4 hit hit 
+108:M 7ff000388,4 hit hit 
+110:M 7ff000384,4 hit hit 
+124:M 7ff000388,4 hit hit 
+136:M 7ff000388,4 hit hit 
+148:M 7ff000388,4 hit hit 
+160:M 7ff000388,4 hit hit 
+162:M 7ff000384,4 hit hit 
+176:M 7ff000388,4 hit hit 
+188:M 7ff000388,4 hit hit 
+200:M 7ff000388,4 hit hit 
+212:M 7ff000388,4 hit hit 
+214:M 7ff000384,4 hit hit 
+L operation
+S operation
+M operation

@@ -12,8 +12,8 @@
 #define MISS_AND_EVICTION 3
 #define MISS_AND_HIT 4
 #define MISS_EVICTION_AND_HIT 5
+#define HIT_HIT 6
 
-// local, static,
 // global variables 
 int hitCount, missCount, evictionCount;
 int S, E;
@@ -23,7 +23,7 @@ struct cacheLine
 {
 	int validBit;
 	unsigned tag;
-	int accessCount;
+	int accessTime;
 };
 
 typedef struct cacheLine line; 
@@ -32,7 +32,10 @@ typedef struct cacheLine line;
 int getopt(int argc, char * const argv[], const char *optstring);
 int initCaches(line * caches, int S, int E);
 int caching(line *caches, char identifier, 
-		unsigned address, int size, int b, int s);
+		unsigned long address, int size, int b, int s);
+void updateAccessTime(line *caches, int setInd, int lineNo);
+// void printVerbose()
+// void cmdParsor()
 
 int main(int argc, char **argv)
 {
@@ -84,6 +87,10 @@ int main(int argc, char **argv)
 	int isInitSuccess;
 	line *caches;
 	caches = (line *) malloc(S*E*sizeof(line));
+	if (!caches) {
+		fprintf(stderr, "Memory error!\n");
+		exit(-1);
+	}
 	isInitSuccess = initCaches(caches, S, E);
 	// initCaches(caches, S, E);
 	if(!isInitSuccess)
@@ -96,32 +103,40 @@ int main(int argc, char **argv)
 	traceFile = fopen(traceName, "r");
 	
 	char identifier;
-	unsigned address;
+	unsigned long address;
 	int size;
+	int cshCount=0;
 
-	while(fscanf(traceFile, " %c %x,%d", &identifier, &address, &size) > 0)
+	while(fscanf(traceFile, " %c %lx,%d", &identifier, &address, &size) > 0)
 	{
-		result = caching(caches, identifier, address, size, b, s);
-		if(verboseFlag == 1)
+		if(identifier != 'I')
 		{
-			switch(result)
-			{
-				case HIT:
-					printf("%c %x,%d: hit\n", identifier, address, size);
-					break;
-				case MISS:
-					printf("%c %x,%d: miss\n", identifier, address, size);
-					break;
-				case MISS_AND_HIT:
-					printf("%c %x,%d: miss hit\n", identifier, address, size);
-					break;
-				case MISS_AND_EVICTION:
-					printf("%c %x,%d: miss eviction\n",identifier, address, size);
-					break;
-				case MISS_EVICTION_AND_HIT:
-					printf("%c %x,%d: miss eviction hit\n",
-							identifier, address, size);
-					break;
+			cshCount++;
+			result = caching(caches, identifier, address, size, b, s);
+			if(verboseFlag == 1)
+			{ 
+				switch(result)
+				{
+					case HIT_HIT:
+						printf("%c %lx,%d hit hit\n", identifier, address, size);
+						break;
+					case HIT:
+						printf("%c %lx,%d hit\n", identifier, address, size);
+						break;
+					case MISS:
+						printf("%c %lx,%d miss\n", identifier, address, size);
+						break;
+					case MISS_AND_HIT:
+						printf("%c %lx,%d miss hit\n", identifier, address, size);
+						break;
+					case MISS_AND_EVICTION:
+						printf("%c %lx,%d miss eviction\n",identifier, address, size);
+						break;
+					case MISS_EVICTION_AND_HIT:
+						printf("%c %lx,%d miss eviction hit\n",
+								identifier, address, size);
+						break;
+				}
 			}
 		}
 	}
@@ -140,7 +155,7 @@ int initCaches(line * caches, int S, int E)
 		{
 			caches[i].validBit = 0;
 			caches[i].tag = 0;
-			caches[i].accessCount = 0;
+			caches[i].accessTime = 0;
 		}
 		return 1;
 	}
@@ -149,7 +164,7 @@ int initCaches(line * caches, int S, int E)
 }
 
 	// every opt need 2 loops in the worst case, and the same code.
-int caching(line *caches, char identifier, unsigned address, int size, int b, int s)
+int caching(line *caches, char identifier, unsigned long address, int size, int b, int s)
 {
 	// parse the address
 	unsigned tag, setInd, setIndMask;
@@ -168,14 +183,14 @@ int caching(line *caches, char identifier, unsigned address, int size, int b, in
 	for(int i = 0; i < E; i++)
 	{
 		// hit
-		if((*(caches + setInd*E + i)).validBit == 1 
-				&& ((*(caches + setInd*E + i)).tag ^ tag) == 0 )
+		if(caches[setInd*E + i].validBit == 1 
+				&& (caches[setInd*E + i].tag ^ tag) == 0 )
 		{
-			(*(caches + setInd*E + i)).accessCount++;
+			updateAccessTime(caches, setInd, i);
 			if(identifier == 'M')
 			{
 				hitCount = hitCount + 2;	// load hit and store hit
-				return HIT;
+				return HIT_HIT;
 			}
 			else 
 			{
@@ -187,12 +202,12 @@ int caching(line *caches, char identifier, unsigned address, int size, int b, in
 	// Miss and meet a empty line
 	for(int i = 0; i < E; i++)
 	{
-		if((*(caches + setInd*E + i)).validBit == 0 )
+		if(caches[setInd*E + i].validBit == 0 )
 		{
-			(*(caches + setInd*E + i)).validBit = 1;
-			(*(caches + setInd*E + i)).tag = tag;
+			caches[setInd*E + i].validBit = 1;
+			caches[setInd*E + i].tag = tag;
 			missCount++;
-			(*(caches + setInd*E + i)).accessCount++;
+			updateAccessTime(caches, setInd, i);
 			if(identifier == 'M')
 			{
 				hitCount++;	// store hit
@@ -208,11 +223,8 @@ int caching(line *caches, char identifier, unsigned address, int size, int b, in
 	int lruLine = 0; 
 	for(int i = 0; i < E; i++)
 	{
-		int lruCount = 0x7fffffff;	// lru: least recently used
-		lruLine = 0; 
-		if(lruCount < (*(caches + setInd*E + i)).accessCount)
+		if(1 ==  caches[setInd*E + i].accessTime)
 		{
-			lruCount =  (*(caches + setInd*E + i)).accessCount;
 			lruLine = i;
 		}
 	}
@@ -220,11 +232,26 @@ int caching(line *caches, char identifier, unsigned address, int size, int b, in
 	(*(caches + setInd*E + lruLine)).tag = tag;
 	missCount++;
 	evictionCount++;
-	(*(caches + setInd*E + lruLine)).accessCount++;
+	updateAccessTime(caches, setInd, lruLine);
 	if(identifier == 'M')
 	{
 		hitCount++;
 		return MISS_EVICTION_AND_HIT;
 	}
 	return MISS_AND_EVICTION;
+}
+
+
+void updateAccessTime(line *caches, int setInd, int lineNo)
+{
+	for(int i = 0; i < E; i++)
+	{
+		if(caches[setInd*E + i].validBit == 1 &&
+					caches[setInd*E + i].accessTime >
+					 (*(caches + setInd*E + lineNo)).accessTime)
+		{
+			--caches[setInd*E + i].accessTime;
+		}
+	}
+	(*(caches + setInd*E + lineNo)).accessTime = E;
 }

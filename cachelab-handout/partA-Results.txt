@@ -1,0 +1,59 @@
+cacheLab partA evaluation
+author: MCX;     ID: hinmo
+2019年 02月 13日 星期三 19:42:19 CST
+
+
+Trial1: 
+./csimxxx -s 1 -E 1 -b 1 -t traces/yi2.trace
+Result: ./csim; ./csim-ref:
+hits:9 misses:8 evictions:6
+hits:9 misses:8 evictions:6
+
+
+Trial2: 
+./csimxxx -s 4 -E 2 -b 4 -t traces/yi.trace
+Result: ./csim; ./csim-ref: 
+hits:4 misses:5 evictions:2
+hits:4 misses:5 evictions:2
+
+
+Trial3: 
+./csimxxx -s 2 -E 1 -b 4 -t traces/dave.trace
+Result: ./csim; ./csim-ref: 
+hits:2 misses:3 evictions:1
+hits:2 misses:3 evictions:1
+
+
+Trial4: 
+./csimxxx -s 2 -E 1 -b 3 -t traces/trans.trace
+Result: ./csim; ./csim-ref: 
+hits:167 misses:71 evictions:67
+hits:167 misses:71 evictions:67
+
+
+Trial5: 
+./csimxxx -s 2 -E 2 -b 3 -t traces/trans.trace
+Result: ./csim; ./csim-ref: 
+hits:201 misses:37 evictions:29
+hits:201 misses:37 evictions:29
+
+
+Trial6: 
+./csimxxx -s 2 -E 4 -b 3 -t traces/trans.trace
+Result: ./csim; ./csim-ref: 
+hits:212 misses:26 evictions:10
+hits:212 misses:26 evictions:10
+
+
+Trial7: 
+./csimxxx -s 5 -E 1 -b 5 -t traces/trans.trace
+Result: ./csim; ./csim-ref: 
+hits:231 misses:7 evictions:0
+hits:231 misses:7 evictions:0
+
+
+Trial8: 
+./csimxxx -s 5 -E 1 -b 5 -t traces/long.trace
+Result: ./csim; ./csim-ref: 
+hits:265189 misses:21775 evictions:21743
+hits:265189 misses:21775 evictions:21743
