@@ -1,7 +1,7 @@
-/* 
+/* author: MCX;		ID: hinmo
+ * 
  * tsh - A tiny shell program with job control
  * 
- * author: MCX;		ID: hinmo
  */
 #include <stdio.h>
 #include <stdlib.h>
