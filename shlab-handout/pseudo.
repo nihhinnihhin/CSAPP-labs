@@ -1,0 +1,5 @@
+
+when the backgroud job finish, is it terminated or stopped?
+how the shell deal with the backgroud job, such as reap it? by sigchld_handler
+
+implement the rest of handlers
