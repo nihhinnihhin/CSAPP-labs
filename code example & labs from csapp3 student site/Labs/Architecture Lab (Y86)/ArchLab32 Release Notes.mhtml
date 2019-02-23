@@ -1,0 +1,196 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://csapp.cs.cmu.edu/3e/archlab32-release.html
+Subject: ArchLab32 Release Notes
+Date: Wed, 5 Dec 2018 11:51:36 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--39FBzbQBJFjFbGGUsVpUlO3Ft4FUsYHUyBGw91JFjR----"
+
+
+------MultipartBoundary--39FBzbQBJFjFbGGUsVpUlO3Ft4FUsYHUyBGw91JFjR----
+Content-Type: text/html
+Content-ID: <frame-01FC9E1B9E87CB4C465AFE7B491E3024@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://csapp.cs.cmu.edu/3e/archlab32-release.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>=
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8"><s=
+tyle class=3D"darkreader darkreader--fallback" media=3D"screen"></style><st=
+yle class=3D"darkreader darkreader--text" media=3D"screen"></style><style c=
+lass=3D"darkreader darkreader--invert" media=3D"screen"></style><style clas=
+s=3D"darkreader darkreader--inline" media=3D"screen">[data-darkreader-inlin=
+e-bgcolor] {
+  background-color: var(--darkreader-inline-bgcolor) !important;
+}
+[data-darkreader-inline-bgimage] {
+  background-image: var(--darkreader-inline-bgimage) !important;
+}
+[data-darkreader-inline-border] {
+  border-color: var(--darkreader-inline-border) !important;
+}
+[data-darkreader-inline-border-bottom] {
+  border-bottom-color: var(--darkreader-inline-border-bottom) !important;
+}
+[data-darkreader-inline-border-left] {
+  border-left-color: var(--darkreader-inline-border-left) !important;
+}
+[data-darkreader-inline-border-right] {
+  border-right-color: var(--darkreader-inline-border-right) !important;
+}
+[data-darkreader-inline-border-top] {
+  border-top-color: var(--darkreader-inline-border-top) !important;
+}
+[data-darkreader-inline-boxshadow] {
+  box-shadow: var(--darkreader-inline-boxshadow) !important;
+}
+[data-darkreader-inline-color] {
+  color: var(--darkreader-inline-color) !important;
+}
+[data-darkreader-inline-fill] {
+  fill: var(--darkreader-inline-fill) !important;
+}
+[data-darkreader-inline-stroke] {
+  stroke: var(--darkreader-inline-stroke) !important;
+}
+[data-darkreader-inline-outline] {
+  outline-color: var(--darkreader-inline-outline) !important;
+}</style><style class=3D"darkreader darkreader--user-agent" media=3D"screen=
+">html {
+    background-color: #f6ead5 !important;
+}
+html, body, input, textarea, select, button {
+    background-color: #f6ead5;
+}
+html, body, input, textarea, select, button {
+    border-color: #504e4a;
+    color: #0e0e0d;
+}
+a {
+    color: #2647ae;
+}
+table {
+    border-color: #837c70;
+}
+::placeholder {
+    color: #aba18f;
+}
+::selection {
+    background-color: #2a5c98;
+    color: #f6ead5;
+}
+::-moz-selection {
+    background-color: #2a5c98;
+    color: #f6ead5;
+}
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    background-color: #fffba4 !important;
+    color: #0e0e0d !important;
+}
+::-webkit-scrollbar {
+    background-color: #eadfc9;
+    color: #646059;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #c0b6a2;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a89f8c;
+}
+::-webkit-scrollbar-thumb:active {
+    background-color: #646059;
+}
+::-webkit-scrollbar-corner {
+    background-color: #f6ead5;
+}</style>
+    <title>ArchLab32 Release Notes</title>
+  <style class=3D"darkreader darkreader--override" media=3D"screen"></style=
+><div id=3D"BIJIA_HAS_BUILT"></div></head>
+
+  <body bgcolor=3D"white" data-darkreader-inline-bgcolor=3D"" style=3D"--da=
+rkreader-inline-bgcolor:#f6ead5;">
+    <h1>ArchLab2 Release Notes</h1>
+
+<table width=3D"700"><tbody><tr><td>
+
+<h2>10/19/2016</h2>
+<ul>
+<li> Fixed a bug in pipe/correctness.pl that allowed programs that are too =
+long to get full credit.=20
+<i>Thanks to Jenna MacCarly, Carnegie Mellon</i>
+</li></ul>
+
+<h2>7/29/2013</h2>
+<ul>
+<li> Updated autograders to compute and summarize all autograded scores
+on the gradesheets.
+
+</li><li> Fixed some typos in the writeup and the slides.
+
+</li><li> In the writeup, updated references to problem numbers for <kbd>ia=
+ddl</kbd>
+and <kbd>leave</kbd> to include the corresponding problem numbers for the
+international version.
+</li></ul>
+
+<h2>5/1/2011</h2>=20
+<b>This is a major update of the Arch Lab that reflects the changes in Chap=
+ter 4 of CS:APP2e.</b>
+
+<ul>=20
+<li> Students can now use the conditional move instructions to avoid
+the performance problems of conditional jumps.
+
+</li><li> The benchmark test has a random selection of positive
+vs. negative numbers.  So, conditional moves are really the way to go.
+
+</li><li> The correctness check is more robust, looking for things like ove=
+rshooting the array bounds.
+
+</li><li> Added a 1000-byte limit on the size of the object code for the nc=
+opy function.
+
+</li><li> Added Perl scripts in <kbd>src/ptest</kbd> that provide comprehen=
+sive
+regression testing of the different Y86 simulators:
+<ul>
+<li>Tests each individual instruction type.
+</li><li>Tests all of the jump types under different conditions.
+</li><li>Tests different pipeline control combinations.
+</li><li>Tests many different hazard possibilities.
+</li></ul>
+
+</li><li> Incorporated the regresssion tests in <kbd>src/ptest</kbd> into t=
+he autograding
+of the student solutions for parts B and C.
+</li></ul>
+
+<h2>11/04/2004</h2>
+<ul>
+<li> Fixed problem that caused some newer Linux distributions to
+get tk.h from /usr/local/include instead of /usr/include.
+<i>Thanks to Prof. Dr. Gerd Doeben-Henisch, Fachhochschule Frankfurt.</i>
+</li></ul>
+
+<h2>12/22/2003</h2>
+<ul>
+<li> Fixed minor bug that caused some compilers to complain.
+Changed type of return value from <kbd>getopt()</kbd> from <kbd>char</kbd>=
+=20
+to <kbd>int</kbd>.
+<i>Thanks to Morgan Harvey, Portland State University.</i>
+</li></ul>
+
+<h2>8/5/2002</h2>
+<ul>
+<li> Initial release.
+</li></ul>
+
+
+</td></tr></tbody></table>
+
+
+</body></html>
+------MultipartBoundary--39FBzbQBJFjFbGGUsVpUlO3Ft4FUsYHUyBGw91JFjR------

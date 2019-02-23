@@ -1,0 +1,168 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: http://csapp.cs.cmu.edu/3e/shlab-release.html
+Subject: Shell Lab Release Notes
+Date: Wed, 5 Dec 2018 11:47:42 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--s7fZ1eWebf3L3dHL7g8GB4y3HNuHrkyobWlovNTJqD----"
+
+
+------MultipartBoundary--s7fZ1eWebf3L3dHL7g8GB4y3HNuHrkyobWlovNTJqD----
+Content-Type: text/html
+Content-ID: <frame-01FC9E1B9E87CB4C465AFE7B491E3024@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: http://csapp.cs.cmu.edu/3e/shlab-release.html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>=
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8"><s=
+tyle class=3D"darkreader darkreader--fallback" media=3D"screen"></style><st=
+yle class=3D"darkreader darkreader--text" media=3D"screen"></style><style c=
+lass=3D"darkreader darkreader--invert" media=3D"screen"></style><style clas=
+s=3D"darkreader darkreader--inline" media=3D"screen">[data-darkreader-inlin=
+e-bgcolor] {
+  background-color: var(--darkreader-inline-bgcolor) !important;
+}
+[data-darkreader-inline-bgimage] {
+  background-image: var(--darkreader-inline-bgimage) !important;
+}
+[data-darkreader-inline-border] {
+  border-color: var(--darkreader-inline-border) !important;
+}
+[data-darkreader-inline-border-bottom] {
+  border-bottom-color: var(--darkreader-inline-border-bottom) !important;
+}
+[data-darkreader-inline-border-left] {
+  border-left-color: var(--darkreader-inline-border-left) !important;
+}
+[data-darkreader-inline-border-right] {
+  border-right-color: var(--darkreader-inline-border-right) !important;
+}
+[data-darkreader-inline-border-top] {
+  border-top-color: var(--darkreader-inline-border-top) !important;
+}
+[data-darkreader-inline-boxshadow] {
+  box-shadow: var(--darkreader-inline-boxshadow) !important;
+}
+[data-darkreader-inline-color] {
+  color: var(--darkreader-inline-color) !important;
+}
+[data-darkreader-inline-fill] {
+  fill: var(--darkreader-inline-fill) !important;
+}
+[data-darkreader-inline-stroke] {
+  stroke: var(--darkreader-inline-stroke) !important;
+}
+[data-darkreader-inline-outline] {
+  outline-color: var(--darkreader-inline-outline) !important;
+}</style><style class=3D"darkreader darkreader--user-agent" media=3D"screen=
+">html {
+    background-color: #f6ead5 !important;
+}
+html, body, input, textarea, select, button {
+    background-color: #f6ead5;
+}
+html, body, input, textarea, select, button {
+    border-color: #504e4a;
+    color: #0e0e0d;
+}
+a {
+    color: #2647ae;
+}
+table {
+    border-color: #837c70;
+}
+::placeholder {
+    color: #aba18f;
+}
+::selection {
+    background-color: #2a5c98;
+    color: #f6ead5;
+}
+::-moz-selection {
+    background-color: #2a5c98;
+    color: #f6ead5;
+}
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    background-color: #fffba4 !important;
+    color: #0e0e0d !important;
+}
+::-webkit-scrollbar {
+    background-color: #eadfc9;
+    color: #646059;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #c0b6a2;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #a89f8c;
+}
+::-webkit-scrollbar-thumb:active {
+    background-color: #646059;
+}
+::-webkit-scrollbar-corner {
+    background-color: #f6ead5;
+}</style>
+    <title>Shell Lab Release Notes</title>
+  <style class=3D"darkreader darkreader--override" media=3D"screen"></style=
+><div id=3D"BIJIA_HAS_BUILT"></div></head>
+
+  <body bgcolor=3D"white" data-darkreader-inline-bgcolor=3D"" style=3D"--da=
+rkreader-inline-bgcolor:#f6ead5;">
+    <h1>Shell Lab Release Notes</h1>
+
+<table width=3D"700"><tbody><tr><td>
+
+<h2>07/28/2003</h2>
+<ul>
+<li> Fixed a race condition in the reference solution that happened
+during the creation of a new job. The race existed between (1) the
+parent adding a new job to the job list and (2) the receipt of a
+SIGINT or SIGTSTP signal.  The fix is to block SIGINT and SIGTSTP
+signals in the parent until after the new job has been added to the
+job list. A similar race was already properly handled for SIGCHLD
+signals.
+
+<p>
+</p></li><li> Also made some minor changes to the reference solution:
+<ul>
+<li> Changed the command line parser supplied to the students
+so that characters surrounded by single quotes are treated as
+a single argument. This allows the tiny shell to handle commands
+such as=20
+<pre>tsh&gt; /bin/sh -c 'ps | fgrep mysplit'
+</pre>
+</li><li> Made a slight change to the formatting of job list output.
+</li></ul>
+</li></ul>
+
+<h2>12/05/2002</h2>
+<ul>
+<li> Added a new trace file (trace16.txt) that tests the shell's
+ability to handle SIGINT and SIGTSTP signals that do not originate
+from the terminal.
+</li></ul>
+
+<h2>10/16/2002</h2>
+<ul>
+<li> Fixed bug in tracefile <kbd>src/trace10.txt</kbd>,=20
+which told the driver to sleep too long before running the <kbd>fg</kbd> co=
+mmand.
+
+</li><li> Removed assumptions in <kbd>src/Makefile</kbd> and <kbd>grade/Mak=
+efile</kbd> that the user had a "." in their Unix path.
+</li></ul>
+
+<h2>6/3/2002</h2>
+<ul>
+<li> Initial release.
+</li></ul>
+
+
+</td></tr></tbody></table>
+
+
+</body></html>
+------MultipartBoundary--s7fZ1eWebf3L3dHL7g8GB4y3HNuHrkyobWlovNTJqD------
