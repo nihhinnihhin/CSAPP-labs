@@ -2,16 +2,48 @@
 #include <string.h>
 #include "csapp.h"
 
-/* Recommended max cache and object sizes */
+/* Recommended max Cache and object sizes */
 #define MAX_CACHE_SIZE 1049000
 #define MAX_OBJECT_SIZE 102400
 
+// data structure
+typedef struct 
+{
+  char host[MAXLINE];
+  char port[MAXLINE];
+  char query[MAXLINE];
+} Rqst_line;
+
+typedef struct
+{
+  char key[MAXLINE];
+  char val[MAXLINE];
+} Rqst_header;
+
+typedef struct 
+{
+  char *id;
+  char *object;
+} Cache_line;
+
+typedef struct 
+{
+  int cnt;
+  Cache_line *objects;
+} Cache;
+
+
+// reader-writer data objects
+// Cache cache;
+// int readcnt;
+// sem_t mutex, w;
+
 // function prototype
-void clienterror(int fd, char *cause, char *errnum,
-			     char *shortmsg, char *longmsg);
-void asServer(int connfd);
-void parse_uri_p(char *uri, char *svrHostname, char *svrPort, char *query_uri);
-void read_requesthdrs_p(int clientfd, char *svrHostname, rio_t *serverRio);
+void asServer(int serverfd);
+void parse_request(int serverfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int *num_hdrs);
+void parse_uri(char *uri, Rqst_line *line);
+Rqst_header parse_header(char *line);
+void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int num_hdrs);
 void clienterror(int fd, char *cause, char *errnum, 
 		 char *shortmsg, char *longmsg);
 
@@ -27,7 +59,7 @@ int main(int argc, char **argv)
 {
 
 	// as server
-	int listenfd, connfd;
+	int listenfd, serverfd;
 	socklen_t clientlen;
 	struct sockaddr_storage clientaddr;  // Enough space for any address
 	char client_hostname[MAXLINE], client_port[MAXLINE];
@@ -39,61 +71,46 @@ int main(int argc, char **argv)
 	listenfd = Open_listenfd(argv[1]);
 	while(1){
 		clientlen = sizeof(struct sockaddr_storage);
-		connfd = Accept(listenfd, (SA*)&clientaddr, &clientlen);
+		serverfd = Accept(listenfd, (SA*)&clientaddr, &clientlen);
 		Getnameinfo((SA*)&clientaddr, clientlen, client_hostname, MAXLINE,
 				client_port, MAXLINE, 0);
 		printf("Proxy connected to (%s, %s)\n", client_hostname, client_port);
-		asServer(connfd);
-		Close(connfd);
+		asServer(serverfd);
+		Close(serverfd);
 	}
     printf("%s", user_agent_hdr);
     return 0;
 }
 
 
-void asServer(int connfd)
+void asServer(int serverfd)
 {
-	// as client
-	int clientfd;
-	char svrHostname[MAXLINE], query_uri[MAXLINE];
-	char svrPort[MAXLINE] = "80";
-	rio_t clientRio;
+  printf("welcome to proxy\n");
+  int clientfd=0;
+  int num_hdrs;
+  char buf[MAXLINE];
+  Rqst_line line;
+  Rqst_header headers[20];
+  rio_t serverRio, clientRio;
+  Rio_readinitb(&serverRio, serverfd);
 
-	char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
-	rio_t serverRio;
-	
-	// Read request line from client
-	Rio_readinitb(&serverRio, connfd);
-	Rio_readlineb(&serverRio, buf, MAXLINE);
-	printf("Request headers:\n");
-	printf("%s", buf);
-	sscanf(buf, "%s %s %s", method, uri, version);	// read input
-    if (strcasecmp(method, "GET")) {                     
-        clienterror(connfd, method, "501", "Not Implemented",
-                    "Tiny does not implement this method");
-        return;
-    }                                                   
-	
-	// Parse URI
-	parse_uri_p(uri, svrHostname, svrPort, query_uri);
-
-	printf("svrHostname: %s, port: %s, query %s", svrHostname, svrPort, query_uri);
+	// Parse request
+  parse_request(serverfd, &serverRio, &line, headers, &num_hdrs);
 	
 	// proxy connect the server as client
-	clientfd = Open_clientfd(svrHostname, svrPort);
+  printf("host :%s, port %s, query %s\n", line.host, line.port, line.query);
+	clientfd = Open_clientfd(line.host, line.port);
+  // if(!clientfd)
+  //   printf("clientfd: %d\n", clientfd);
 	Rio_readinitb(&clientRio, clientfd);
 
-	// send the request line to server
-	sprintf(buf, "GET %s HTTP/1.0", query_uri);
-	Rio_writen(clientfd, buf, strlen(buf));
-	
-	// read request headers from client and send them to server
-	read_requesthdrs_p(clientfd, svrHostname, &serverRio);
+	// send the request to server
+	send_request(clientfd, &serverRio, &line, headers, num_hdrs);
 
 	// read result from server and write to client
 	Rio_readlineb(&clientRio, buf, MAXLINE);
 	while(strcmp(buf, "\r\n")){
-		Rio_writen(connfd, buf, strlen(buf));
+		Rio_writen(serverfd, buf, strlen(buf));
 		printf("%s", buf);
 		Rio_readlineb(&clientRio, buf, MAXLINE);
 	}
@@ -101,63 +118,82 @@ void asServer(int connfd)
 }
 
 
+void parse_request
+(int serverfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int *num_hdrs)
+{
+    char buf[MAXLINE], method[MAXLINE], uri[MAXLINE], version[MAXLINE];
+
+    Rio_readinitb(serverRio, serverfd);
+    if (!Rio_readlineb(serverRio, buf, MAXLINE))  
+        return;
+    
+    //parse request line
+    sscanf(buf, "%s %s %s", method, uri, version);
+    parse_uri(uri, line);
+    
+    //parse request headers
+    *num_hdrs = 0;
+    Rio_readlineb(serverRio, buf, MAXLINE);
+    while(strcmp(buf, "\r\n")) {
+      headers[(*num_hdrs)++] = parse_header(buf);
+      Rio_readlineb(serverRio, buf, MAXLINE);
+    }
+}
 
 
-void parse_uri_p(char *uri, char *svrHostname, char *svrPort, char *query_uri)
+
+
+void parse_uri(char *uri, Rqst_line *line)
 {
 	char *afterTwoSlash, *thirdSlash, *colon;
 	afterTwoSlash = strstr(uri, "/");
 	afterTwoSlash+=2; // skip the first two /
 	thirdSlash = strstr(afterTwoSlash, "/");
 	colon = strstr(afterTwoSlash, ":");
-	strcpy(query_uri, thirdSlash);
+	strcpy(line->query, thirdSlash);
 	if(colon != NULL)
 	{
-		int nameLen = colon -afterTwoSlash;
-		strncpy(svrHostname, afterTwoSlash, nameLen);
-		svrHostname[nameLen]='\0';
+		int nameLen = colon - afterTwoSlash;
+		strncpy(line->host, afterTwoSlash, nameLen);
+		line->host[nameLen]='\0';
 		int portLen = thirdSlash-(colon+1);
-		strncpy(svrPort, colon+1, portLen);
-		svrPort[portLen]='\0';
+		strncpy(line->port, colon+1, portLen);
+		line->port[portLen]='\0';
 	}
 	else
 	{
 		int nameLen = thirdSlash - afterTwoSlash;
-		strncpy(svrHostname, afterTwoSlash, nameLen);
-		svrHostname[nameLen]='\0';
+		strncpy(line->host, afterTwoSlash, nameLen);
+		line->host[nameLen]='\0';
+    strcpy(line->port,"80");
 	}
-	
 }
 
-void read_requesthdrs_p(int clientfd, char *svrHostname, rio_t *serverRio) 
-{
-    char buf[MAXLINE];
-	char sendBuf[MAXLINE];
-    Rio_readlineb(serverRio, buf, MAXLINE);
-    printf("%s", buf);
-    while(strcmp(buf, "\r\n")) {          //line:netp:readhdrs:checkterm
-	Rio_readlineb(serverRio, buf, MAXLINE);
-	printf("%s", buf);
+
+Rqst_header parse_header(char *line) {
+    Rqst_header header;
+    char *c = strstr(line, ": ");
+    if (c == NULL) {
+        fprintf(stderr, "Error: invalid header: %s\n", line);
+        exit(0);
     }
+    *c = '\0';
+    strcpy(header.key, line);
+    strcpy(header.val, c+2);
+    return header;
+}
 
-	// always send some request headers
-	sprintf(sendBuf, "Host: %s", svrHostname);
-	Rio_writen(clientfd, sendBuf, strlen(sendBuf));
-	printf("%s", sendBuf);
-
-	strcpy(sendBuf , user_agent_hdr);
-	Rio_writen(clientfd, sendBuf, strlen(sendBuf));
-	printf("%s", sendBuf);
-
-	strcpy(sendBuf,"Connection: close");
-	Rio_writen(clientfd, sendBuf, strlen(sendBuf));
-	printf("%s", sendBuf);
-	
-	strcpy(sendBuf,"Proxy-Connection: close");
-	Rio_writen(clientfd, sendBuf, strlen(sendBuf));
-	printf("%s", sendBuf);
-
-    return;
+void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int num_hdrs)
+{
+  char buf[MAXLINE], *buf_head = buf;
+  sprintf(buf_head, "GET %s HTTP/1.0\r\n", line->query);
+  buf_head = buf + strlen(buf);
+  for (int i = 0; i < num_hdrs; ++i) {
+        sprintf(buf_head, "%s: %s", headers[i].key, headers[i].val);
+        buf_head = buf + strlen(buf);
+    }
+  sprintf(buf_head, "\r\n");
+  Rio_writen(clientfd, buf, MAXLINE);
 }
 
 /* $begin clienterror */
