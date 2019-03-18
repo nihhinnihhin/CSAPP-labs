@@ -85,7 +85,6 @@ int main(int argc, char **argv)
 
 void asServer(int serverfd)
 {
-  printf("welcome to proxy\n");
   int clientfd=0;
   int num_hdrs;
   char buf[MAXLINE];
@@ -98,10 +97,7 @@ void asServer(int serverfd)
   parse_request(serverfd, &serverRio, &line, headers, &num_hdrs);
 	
 	// proxy connect the server as client
-  printf("host :%s, port %s, query %s\n", line.host, line.port, line.query);
 	clientfd = Open_clientfd(line.host, line.port);
-  // if(!clientfd)
-  //   printf("clientfd: %d\n", clientfd);
 	Rio_readinitb(&clientRio, clientfd);
 
 	// send the request to server
@@ -111,7 +107,7 @@ void asServer(int serverfd)
 	Rio_readlineb(&clientRio, buf, MAXLINE);
 	while(strcmp(buf, "\r\n")){
 		Rio_writen(serverfd, buf, strlen(buf));
-		printf("%s", buf);
+		printf("< %s", buf);
 		Rio_readlineb(&clientRio, buf, MAXLINE);
 	}
 	Close(clientfd);
@@ -130,8 +126,6 @@ void parse_request
     //parse request line
     sscanf(buf, "%s %s %s", method, uri, version);
     parse_uri(uri, line);
-    
-    //parse request headers
     *num_hdrs = 0;
     Rio_readlineb(serverRio, buf, MAXLINE);
     while(strcmp(buf, "\r\n")) {
@@ -187,12 +181,15 @@ void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *
 {
   char buf[MAXLINE], *buf_head = buf;
   sprintf(buf_head, "GET %s HTTP/1.0\r\n", line->query);
+  printf("> %s", buf_head);
   buf_head = buf + strlen(buf);
   for (int i = 0; i < num_hdrs; ++i) {
         sprintf(buf_head, "%s: %s", headers[i].key, headers[i].val);
+        printf("> %s", buf_head);
         buf_head = buf + strlen(buf);
     }
   sprintf(buf_head, "\r\n");
+  printf("> %s", buf_head);
   Rio_writen(clientfd, buf, MAXLINE);
 }
 
