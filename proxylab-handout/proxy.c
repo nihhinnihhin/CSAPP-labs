@@ -39,6 +39,7 @@ typedef struct
 // sem_t mutex, w;
 
 // function prototype
+void thread
 void asServer(int serverfd);
 void parse_request(int serverfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int *num_hdrs);
 void parse_uri(char *uri, Rqst_line *line);
@@ -46,6 +47,10 @@ Rqst_header parse_header(char *line);
 void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int num_hdrs);
 void clienterror(int fd, char *cause, char *errnum, 
 		 char *shortmsg, char *longmsg);
+// void *thread(void *vargp);
+// void init_cache();
+// int reader(int fd, char *uri);
+// void writer(char *uri, char *buf);
 
 /* You won't lose style points for including this long line in your code */
 static const char *user_agent_hdr = "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) Gecko/20120305 Firefox/10.0.3\r\n";
@@ -104,11 +109,19 @@ void asServer(int serverfd)
 	send_request(clientfd, &serverRio, &line, headers, num_hdrs);
 
 	// read result from server and write to client
-	Rio_readlineb(&clientRio, buf, MAXLINE);
-	while(strcmp(buf, "\r\n")){
-		Rio_writen(serverfd, buf, strlen(buf));
-		printf("< %s", buf);
-		Rio_readlineb(&clientRio, buf, MAXLINE);
+  // int n;
+  // while ((n = Rio_readlineb(&serverRio, buf, MAXLINE))) {
+  //       Rio_writen(serverfd, buf, n);
+  //       strcpy(object_buf + total_size, buf);
+  //       total_size += n;
+  //   }
+
+  // high-risky buggy code
+  int n;
+
+	while((n=Rio_readlineb(&clientRio, buf, MAXLINE))){
+		Rio_writen(serverfd, buf, n);
+		printf("%s", buf);
 	}
 	Close(clientfd);
 }
@@ -185,11 +198,11 @@ void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *
   buf_head = buf + strlen(buf);
   for (int i = 0; i < num_hdrs; ++i) {
         sprintf(buf_head, "%s: %s", headers[i].key, headers[i].val);
-        printf("> %s", buf_head);
+        printf("> %s, len: %d", buf_head, (int)strlen(buf_head));
         buf_head = buf + strlen(buf);
     }
   sprintf(buf_head, "\r\n");
-  printf("> %s", buf_head);
+  printf("> %s, len: %d", buf_head, (int)strlen(buf_head));
   Rio_writen(clientfd, buf, MAXLINE);
 }
 
@@ -216,3 +229,37 @@ void clienterror(int fd, char *cause, char *errnum,
     Rio_writen(fd, body, strlen(body));
 }
 /* $end clienterror */
+
+
+// int reader(int fd, char *uri) {
+//     int in_cache= 0;
+//     P(&mutex);
+//     readcnt++;
+//     if (readcnt == 1) {
+//         P(&w);
+//     }
+//     V(&mutex);
+
+//     for (int i = 0; i < 10; ++i) {
+//         if (!strcmp(cache.objects[i].name, uri)) {
+//             Rio_writen(fd, cache.objects[i].object, MAX_OBJECT_SIZE);
+//             in_cache = 1;
+//             break;
+//         }
+//     }
+//     P(&mutex);
+//     readcnt--;
+//     if (readcnt == 0) {
+//         V(&w);
+//     }
+//     V(&mutex);
+//     return in_cache;
+// }
+
+// void writer(char *uri, char *buf) {
+//     P(&w);
+//     strcpy(cache.objects[cache.used_cnt].name, uri);
+//     strcpy(cache.objects[cache.used_cnt].object, buf);
+//     ++cache.used_cnt;
+//     V(&w);
+// }
