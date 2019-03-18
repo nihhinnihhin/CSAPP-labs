@@ -186,6 +186,7 @@ app_error	csapp.c	/^void app_error(char *msg) \/* Application error *\/$/;"	f
 app_error	tiny/csapp.c	/^void app_error(char *msg) \/* Application error *\/$/;"	f
 asServer	proxy.c	/^void asServer(int connfd)$/;"	f
 clear_dirs	driver.sh	/^function clear_dirs {$/;"	f
+clienterror	proxy.c	/^void clienterror(int fd, char *cause, char *errnum, $/;"	f
 clienterror	tiny/tiny.c	/^void clienterror(int fd, char *cause, char *errnum, $/;"	f
 dns_error	csapp.c	/^void dns_error(char *msg) \/* Obsolete gethostbyname error *\/$/;"	f
 dns_error	tiny/csapp.c	/^void dns_error(char *msg) \/* Obsolete gethostbyname error *\/$/;"	f
