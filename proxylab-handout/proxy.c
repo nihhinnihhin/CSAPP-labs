@@ -33,13 +33,13 @@ typedef struct
 } Cache;
 
 
-// reader-writer data objects
-// Cache cache;
-// int readcnt;
-// sem_t mutex, w;
+// global shard variable;
+Cache cache;
+volatile int readcnt;
+sem_t mutex, w;
 
 // function prototype
-void thread
+void *thread(void *vargp);
 void asServer(int serverfd);
 void parse_request(int serverfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int *num_hdrs);
 void parse_uri(char *uri, Rqst_line *line);
@@ -47,10 +47,9 @@ Rqst_header parse_header(char *line);
 void send_request(int clientfd, rio_t *serverRio, Rqst_line *line, Rqst_header *headers, int num_hdrs);
 void clienterror(int fd, char *cause, char *errnum, 
 		 char *shortmsg, char *longmsg);
-// void *thread(void *vargp);
 // void init_cache();
-// int reader(int fd, char *uri);
-// void writer(char *uri, char *buf);
+int reader(int fd, char *uri);
+void writer(char *uri, char *buf);
 
 /* You won't lose style points for including this long line in your code */
 static const char *user_agent_hdr = "User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:10.0.3) Gecko/20120305 Firefox/10.0.3\r\n";
@@ -62,12 +61,12 @@ static const char *user_agent_hdr = "User-Agent: Mozilla/5.0 (X11; Linux x86_64;
 // client and server
 int main(int argc, char **argv)
 {
-
-	// as server
-	int listenfd, serverfd;
+	int listenfd, *serverfd;
 	socklen_t clientlen;
 	struct sockaddr_storage clientaddr;  // Enough space for any address
 	char client_hostname[MAXLINE], client_port[MAXLINE];
+
+  pthread_t tid;
 
 	if(argc != 2){
 		fprintf(stderr, "usage: %s <port>\n", argv[0]);
@@ -76,15 +75,27 @@ int main(int argc, char **argv)
 	listenfd = Open_listenfd(argv[1]);
 	while(1){
 		clientlen = sizeof(struct sockaddr_storage);
-		serverfd = Accept(listenfd, (SA*)&clientaddr, &clientlen);
+    serverfd = Malloc(sizeof(int)); 
+    // independent memory block to avoid race
+		*serverfd = Accept(listenfd, (SA*)&clientaddr, &clientlen);
 		Getnameinfo((SA*)&clientaddr, clientlen, client_hostname, MAXLINE,
 				client_port, MAXLINE, 0);
 		printf("Proxy connected to (%s, %s)\n", client_hostname, client_port);
-		asServer(serverfd);
-		Close(serverfd);
+		Pthread_create(&tid, NULL, thread, serverfd);
 	}
     printf("%s", user_agent_hdr);
     return 0;
+}
+
+void *thread(void *vargp)
+{
+  // detach itself to enable OS to collect the resources at the end of life
+  int serverfd = *((int *)vargp);
+  Pthread_detach(Pthread_self());
+  Free(vargp);
+  asServer(serverfd);
+  Close(serverfd);
+  return NULL;
 }
 
 
