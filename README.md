@@ -4,122 +4,6 @@
 
 # CSAPP
 
-## 虚拟内存
-
-进程对内存的需求大，进程之间假如共享数据呢？为什么进程需要独立的内存空间？
-
-1. **虚拟内存空间**：$2^{64}$
-2.  **VM的作用**：
-    * 缓存：将主存作为虚拟内存空间的cache
-    * 内存管理：所有进程都有同样形式的地址空间，如不同区域的起始地址是一致的，static data等。
-    * 内存保护：每个page有相应的权限码，孤立进程的地址空间，进程间不能访问相互的地址空间，用户进程不能访问内核数据和代码
-
-3. **主存作为cache**：
-    * 类似CPU的缓存，利用了locality，其中hit，miss（page fault, sig handler, reexecute）.
-4. **内存管理**：按页分配，进程可共享某个文件（虚拟内存映射），进程的内存分配（虚拟地址空间如code、data、heap一致，有占用所有内存的抽象，简化linking；简化loading，分配）
-
-5. **VP translation**（磁盘存取慢，为减少miss的penalty而设计）:
-multi-level page table（一个地址有多个VPN，virtual page number），MMU，MMU和主存间的L1 cache for page，TLB（地址缓存）
-
-6. **Virtual Address Space** of a Linux Process(通过mm_struct, vm_area_struct 链表来管理Area，如Data，text)
-内核虚拟内存、用户栈、映射过来的共享库、堆、未初始化的数据(.bss) 、已初始化的数据、程序文本
-
-7. **内存映射** read, copy-on-write, mmap， munmap
-可通过mmap， munmap或者sbrk(堆的生长和收缩)来实现malloc动态内存分配器
-
-8. **Allocator**：动态内存管理：显式分配器；隐式分配器
-分配器的specification：内存对齐()、只使用堆等。
-目标：最大化吞吐率（时间）；最大化内存利用率（空间）
-碎片：内部（取决于过去，由padding，隐式指针的head和foot等引起）；外部取决过去操作和未来操作（要存的对象小于内存块）
-
-* 操作：free block组织；放置，分割，合并
-
-* 组织1：单向或双向的隐式链表；空闲链表是真个内存块链表的子集
-        * pro：简单；cons：时间O(n)，空间（由于对齐原因如8bytes，每个块不论payload大小，均需要改大小以上）
-        * 维护：结构：header, payload, footer
-        * 放置操作：first fit; next fit; best fit(时间空间各有优缺点)
-        * 分割空闲块
-        * 合并：根据footer和header来判断前后能否合并
-
-* 组织2：显式链表：空闲块中存储两指针(pred, next)指向前向空闲块和后继空闲块:。
-        * pro：时间减少到（O(#空间块)）cons：空间块足够大包含next，pred指针；链表操作比较复杂，
-        * 维护：后进先出（新释放的块放于表头，链表的断裂与连接操作）；基于红黑树以地址为key来实现
-
-* 组织3：分离的空闲链表
-        * 维护：多个不同大小的链表；
-        * 插入操作：基于sizeof(object)从小到大找对应的链表，然后遍历，找出合适的block，插入后将多余的bloc加入到其他大小的free list中，若无合适的block往更大的找
-
-* 垃圾回收：（C/C++保守的垃圾收集器，不能维持垃圾回收有向图的精确表示，即可达与不可达的结点标记可能相反，java、python，不需要显式free）
-        *  基本概念：无论何时需要malloc，若没有空间，垃圾收集器就去识别垃圾并调用free，垃圾收集器返回时malloc重试，否则扩展堆
-        *  Mark & Sweep：从多个根节点开始用dfs来mark可达结点，接着扫描所有block，未mark的就是垃圾，不可达，调用free
-        *  C语言的Mark&Sweep：对isPtr没有明显的方式来判断其输入指针为真正的指针(可能是某个block中的float类型数据伪装成的指针)，防止出错，保守地将一些不可达标记为可达；，或者其指向一个allocated block ，所以采用保守的Mark&Sweep方式。
-
-9. 内存泄漏：
-
-
-
-10. 常见内存错误：C，
-```
-////////////// 越界等//////////////
-////////////// 内存未分配失败//////////////
-int *i=malloc(sizeof(int));//失败的话 i==NULL;
-*i=4;
-////////////// dereferencing bad pointer //////////////
-int val;
-...
-scanf("%d",val); // scanf("%d", &val);
-////////////// buffer overflow //////////////
-////////////// 读未初始化的指针//////////////
-/* return y = Ax */
-int *matvec(int **A, int *x) {  int *y = malloc(N*sizeof(int)); int i, j;
-for (i=0; i<N; i++) for (j=0; j<N; j++)
-y[i] += A[i][j]*x[j]; return y;
-}
-//////////////覆盖内存//////////////
-// 分配错误大小
-int **p;
-p = malloc(N*sizeof(int));
-for (i=0; i<N; i++) {
-    p[i] = malloc(M*sizeof(int));
-}
-// buffer overflow
-char s[8];
-int i;
-gets(s);
-//////////////指向不存在的对象//////////////
-// 指向悬挂指针
-int *foo () {
-    int val;
-    return &val;
-}
-///////////多次free一个block或者忘记free/////////////
-x = malloc(N*sizeof(int));
-<manipulate x> free(x);
-...
-y = malloc(M*sizeof(int)); for (i=0; i<M; i++)
-y[i] = x[i]++;
-//////////////引用已free的block//////////////
-x = malloc(N*sizeof(int));
-<manipulate x> free(x);
-...
-y = malloc(M*sizeof(int)); 
-for (i=0; i<M; i++)
-    y[i] = x[i]++;
-//////////////未free全//////////////
-struct list {
-    int val;
-    struct list *next;
-};
-foo() {
-    struct list *head = malloc(sizeof(struct list));       head->val = 0;
-    head->next = NULL;
-    <create and manipulate the rest of the list>
-    ...
-    free(head); return;
-}
-
-```
-        
 ## data lab
 
 ## bomb lab
@@ -256,7 +140,7 @@ void updateAccessTime(line *caches, int setInd, int lineNo)
 
 
 
-## python lab 
+## shell lab 
 
 ### 进程相关，exception
 1. 进程
@@ -532,3 +416,122 @@ String encryptPassword(const string& password)
   return encrypted
 }
 ```
+
+
+
+## 虚拟内存 Malloc Lab
+
+进程对内存的需求大，进程之间假如共享数据呢？为什么进程需要独立的内存空间？
+
+1. **虚拟内存空间**：$2^{64}$
+2.  **VM的作用**：
+    * 缓存：将主存作为虚拟内存空间的cache
+    * 内存管理：所有进程都有同样形式的地址空间，如不同区域的起始地址是一致的，static data等。
+    * 内存保护：每个page有相应的权限码，孤立进程的地址空间，进程间不能访问相互的地址空间，用户进程不能访问内核数据和代码
+
+3. **主存作为cache**：
+    * 类似CPU的缓存，利用了locality，其中hit，miss（page fault, sig handler, reexecute）.
+4. **内存管理**：按页分配，进程可共享某个文件（虚拟内存映射），进程的内存分配（虚拟地址空间如code、data、heap一致，有占用所有内存的抽象，简化linking；简化loading，分配）
+
+5. **VP translation**（磁盘存取慢，为减少miss的penalty而设计）:
+multi-level page table（一个地址有多个VPN，virtual page number），MMU，MMU和主存间的L1 cache for page，TLB（地址缓存）
+
+6. **Virtual Address Space** of a Linux Process(通过mm_struct, vm_area_struct 链表来管理Area，如Data，text)
+内核虚拟内存、用户栈、映射过来的共享库、堆、未初始化的数据(.bss) 、已初始化的数据、程序文本
+
+7. **内存映射** read, copy-on-write, mmap， munmap
+可通过mmap， munmap或者sbrk(堆的生长和收缩)来实现malloc动态内存分配器
+
+8. **Allocator**：动态内存管理：显式分配器；隐式分配器
+分配器的specification：内存对齐()、只使用堆等。
+目标：最大化吞吐率（时间）；最大化内存利用率（空间）
+碎片：内部（取决于过去，由padding，隐式指针的head和foot等引起）；外部取决过去操作和未来操作（要存的对象小于内存块）
+
+* 操作：free block组织；放置，分割，合并
+
+* 组织1：单向或双向的隐式链表；空闲链表是真个内存块链表的子集
+        * pro：简单；cons：时间O(n)，空间（由于对齐原因如8bytes，每个块不论payload大小，均需要改大小以上）
+        * 维护：结构：header, payload, footer
+        * 放置操作：first fit; next fit; best fit(时间空间各有优缺点)
+        * 分割空闲块
+        * 合并：根据footer和header来判断前后能否合并
+
+* 组织2：显式链表：空闲块中存储两指针(pred, next)指向前向空闲块和后继空闲块:。
+        * pro：时间减少到（O(#空间块)）cons：空间块足够大包含next，pred指针；链表操作比较复杂，
+        * 维护：后进先出（新释放的块放于表头，链表的断裂与连接操作）；基于红黑树以地址为key来实现
+
+* 组织3：分离的空闲链表
+        * 维护：多个不同大小的链表；
+        * 插入操作：基于sizeof(object)从小到大找对应的链表，然后遍历，找出合适的block，插入后将多余的bloc加入到其他大小的free list中，若无合适的block往更大的找
+
+* 垃圾回收：（C/C++保守的垃圾收集器，不能维持垃圾回收有向图的精确表示，即可达与不可达的结点标记可能相反，java、python，不需要显式free）
+        *  基本概念：无论何时需要malloc，若没有空间，垃圾收集器就去识别垃圾并调用free，垃圾收集器返回时malloc重试，否则扩展堆
+        *  Mark & Sweep：从多个根节点开始用dfs来mark可达结点，接着扫描所有block，未mark的就是垃圾，不可达，调用free
+        *  C语言的Mark&Sweep：对isPtr没有明显的方式来判断其输入指针为真正的指针(可能是某个block中的float类型数据伪装成的指针)，防止出错，保守地将一些不可达标记为可达；，或者其指向一个allocated block ，所以采用保守的Mark&Sweep方式。
+
+9. 内存泄漏：
+
+
+
+10. 常见内存错误：C，
+```
+////////////// 越界等//////////////
+////////////// 内存未分配失败//////////////
+int *i=malloc(sizeof(int));//失败的话 i==NULL;
+*i=4;
+////////////// dereferencing bad pointer //////////////
+int val;
+...
+scanf("%d",val); // scanf("%d", &val);
+////////////// buffer overflow //////////////
+////////////// 读未初始化的指针//////////////
+/* return y = Ax */
+int *matvec(int **A, int *x) {  int *y = malloc(N*sizeof(int)); int i, j;
+for (i=0; i<N; i++) for (j=0; j<N; j++)
+y[i] += A[i][j]*x[j]; return y;
+}
+//////////////覆盖内存//////////////
+// 分配错误大小
+int **p;
+p = malloc(N*sizeof(int));
+for (i=0; i<N; i++) {
+    p[i] = malloc(M*sizeof(int));
+}
+// buffer overflow
+char s[8];
+int i;
+gets(s);
+//////////////指向不存在的对象//////////////
+// 指向悬挂指针
+int *foo () {
+    int val;
+    return &val;
+}
+///////////多次free一个block或者忘记free/////////////
+x = malloc(N*sizeof(int));
+<manipulate x> free(x);
+...
+y = malloc(M*sizeof(int)); for (i=0; i<M; i++)
+y[i] = x[i]++;
+//////////////引用已free的block//////////////
+x = malloc(N*sizeof(int));
+<manipulate x> free(x);
+...
+y = malloc(M*sizeof(int)); 
+for (i=0; i<M; i++)
+    y[i] = x[i]++;
+//////////////未free全//////////////
+struct list {
+    int val;
+    struct list *next;
+};
+foo() {
+    struct list *head = malloc(sizeof(struct list));       head->val = 0;
+    head->next = NULL;
+    <create and manipulate the rest of the list>
+    ...
+    free(head); return;
+}
+
+```
+        
