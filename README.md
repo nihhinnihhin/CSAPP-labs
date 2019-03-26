@@ -2,7 +2,6 @@
 跟着cmu-ics-fall2015课程做labs
 
 
-
 ## data lab
 
 ## bomb lab
